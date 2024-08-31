@@ -1,46 +1,53 @@
-# Getting Started with Create React App
+# Architecture
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+![image](https://github.com/user-attachments/assets/4e5f6b94-08ba-447f-b187-66953b21f92e)
 
-## Available Scripts
 
-In the project directory, you can run:
+# Steps
 
-### `npm start`
+## 1: Create a Redux Store
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Import the **configureStore** API from Redux Toolkit
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+export const store = configureStore({
+  reducer: {},
+})
 
-### `npm test`
+## 2: Provide the Redux Store to React
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Once the store is created, we can make it available to our React components by putting a **React-Redux <Provider>** around our application 
 
-### `npm run build`
+import the store created in step-1
+<Provider store={store}>
+    <App />
+</Provider>
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 3: Create a Redux State Slice
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+For creating a slice , we require below thing
+ -> a *string name* to identify the slice
+ -> an *initial state* value
+ -> one or more *reducer functions* to define how the state can be updated.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Once a slice is created, we can export the generated Redux action creators and the reducer function for the whole slice.
 
-### `npm run eject`
+    Ex- 
+    export const  counterSlice = createSlice({
+        initialState: 0,
+        name: "Counter",
+        reducers:{
+            increment:(state) =>state + 1,
+            decrement: (state) => state - 1
+        },
+    });
+    export const {decrement, increment} = counterSlice.actions;
+    export default counterSlice.reducer;
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## 4 Add Slice Reducers to the Store
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Import the reducer function from the counter slice and add it to our store. 
+By defining a field inside the reducer parameter, we tell the store to use this slice reducer function to handle all updates to that state.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## 5 Use Redux State and Actions in React Components
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+We can use the React-Redux hooks to let React components interact with the Redux store. We can read data from the store with useSelector, and dispatch actions using useDispatch
